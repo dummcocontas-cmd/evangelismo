@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Caixinha de Promessas - Comunidade Baptista da Paz</title>
+
+  <meta property="og:title" content="Caixinha de Promessas - Palavra de Deus para Você">
+  <meta property="og:description" content="Receba uma mensagem especial de Deus para o seu dia">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://dummcocontas-cmd.github.io/meusite/assets/logo.svg">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="preload" href="assets/logo.svg" as="image" type="image/svg+xml">
+
+  <style>
+    :root{
+      --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      --shadow-lg: 0 24px 60px rgba(25,33,61,.18);
+      --shadow-md: 0 12px 30px rgba(25,33,61,.12);
+      --radius-xl: 20px;
+    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{
+      font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial,sans-serif;
+      background:var(--primary-gradient);
+      min-height:100vh; display:flex; justify-content:center; align-items:center; padding:20px;
+    }
+    .container{
+      width:100%; max-width:560px; overflow:hidden;
+      border-radius:var(--radius-xl);
+      background:rgba(255,255,255,.94);
+      backdrop-filter: blur(12px);
+      border:1px solid rgba(255,255,255,.5);
+      box-shadow:var(--shadow-lg);
+    }
+    .header{
+      background:var(--primary-gradient); color:#fff; text-align:center;
+      padding:16px 14px 6px;
+    }
+    .church-logo {
+      width:80px; height:80px; margin:0 auto 3px;
+      border-radius:50%; background:#5835ac;
+      object-fit:contain; padding:2px;
+    }
+    .header h1{ font-family:'Playfair Display',serif; font-size:22px; margin-bottom:6px; text-shadow:0 2px 10px rgba(0,0,0,.25);}
+    .header p{opacity:.95; font-size:13px; margin-bottom:10px}
+
+    .social-links {
+      display:flex; gap:18px; justify-content:center;
+      margin:10px 0 6px; font-size:24px;
+    }
+    .social-links a { text-decoration:none; transition:transform .2s ease; }
+    .social-links a:hover { transform:scale(1.2); }
+    .social-links .instagram { color:#E1306C; }
+    .social-links .facebook  { color:#1877F2; }
+    .social-links .youtube   { color:#FF0000; }
+
+    .content{ padding:14px; }
+
+    #canvas-container{
+      position:relative; margin-bottom:14px; border-radius:18px; overflow:hidden;
+      background:linear-gradient(135deg, rgba(255,255,255,.5), rgba(255,255,255,.3));
+      border:1px solid rgba(255,255,255,.7);
+      box-shadow:var(--shadow-md);
+      width:calc(100% + 28px);
+      margin-left:-14px; margin-right:-14px;
+    }
+    #verse-canvas{display:block; width:100%; height:auto}
+
+    .loading{text-align:center;padding:34px;color:#fff}
+    .loading-spinner{
+      width:40px;height:40px;border-radius:50%;
+      border:3px solid rgba(255,255,255,.35); border-top-color:#fff;
+      animation:spin 1s linear infinite; margin:0 auto 12px;
+    }
+    @keyframes spin{to{rotate:360deg}}
+
+    .action-buttons{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:10px 0 18px;}
+    .btn{
+      border:none; border-radius:12px; padding:13px 16px; font-weight:700; font-size:14px;
+      display:inline-flex; align-items:center; justify-content:center; gap:8px; cursor:pointer;
+      color:#fff; box-shadow:0 6px 18px rgba(25,33,61,.12);
+    }
+    .btn i{font-size:1rem; line-height:1;}
+    .btn-download{background:linear-gradient(135deg,#16a34a,#22c55e)}
+    .btn-whatsapp{background:linear-gradient(135deg,#25D366,#128C7E)}
+    .btn-primary{background:linear-gradient(135deg,#667eea,#764ba2)}
+    .btn-full{grid-column:1/-1}
+
+    .prayer-section{margin-top:14px; padding-top:16px; border-top:1px dashed #e2e8f0}
+    .prayer-section h3{font-size:16px; color:#111827; text-align:center; margin-bottom:10px}
+    .prayer-form{display:none}
+    .prayer-form.active{display:block}
+    .form-group{margin-bottom:12px}
+    .form-group label{display:block; margin-bottom:6px; color:#6b7280; font-size:13px}
+    .form-group input,.form-group textarea{
+      width:100%; border:1px solid #e5e7eb; border-radius:10px; padding:12px; font-size:14px;
+      background:#fff;
+    }
+    .form-group textarea{min-height:110px; resize:vertical}
+    .btn-ask{ display:block; width:fit-content; margin:0 auto 12px; }
+
+    .church-info{
+      background:#f8fafc; border:1px solid #eef2f7; border-radius:14px; padding:16px; text-align:center;
+    }
+    .church-info h4{font-weight:800; margin-bottom:6px}
+    .church-info p{font-size:13px; color:#475569; display:flex; align-items:center; justify-content:center; gap: 8px;}
+
+    .refresh-btn{
+      position:fixed; bottom:18px; right:18px; width:56px; height:56px; border:none; border-radius:16px;
+      background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; font-size:24px; cursor:pointer;
+      box-shadow:var(--shadow-lg);
+      display:none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+
+      <img class="church-logo"
+           src="https://dummcocontas-cmd.github.io/meusite/assets/logo.svg?v=2"
+           alt="Logo da Comunidade Baptista da Paz">
+
+      <h1>Caixinha de Promessas</h1>
+      <p>Uma palavra especial de Deus para você</p>
+
+      <div class="social-links">
+        <a href="https://www.instagram.com/comunidadebaptista/" target="_blank" class="instagram" title="Instagram">
+          <i class="fa-brands fa-instagram"></i>
+        </a>
+        <a href="https://www.facebook.com/comunidade.baptistadapaz" target="_blank" class="facebook" title="Facebook">
+          <i class="fa-brands fa-facebook"></i>
+        </a>
+        <a href="https://youtube.com/comunidadebaptistadapaz" target="_blank" class="youtube" title="YouTube">
+          <i class="fa-brands fa-youtube"></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="content">
+      <div id="loading-container" class="loading">
+        <div class="loading-spinner"></div>
+        <p>Preparando sua mensagem...</p>
+      </div>
+
+      <div id="canvas-container" style="display:none;">
+        <canvas id="verse-canvas"></canvas>
+      </div>
+
+      <div id="action-container" style="display:none;">
+        <div class="action-buttons">
+          <button class="btn btn-download" onclick="downloadImage()">
+            <i class="fa-solid fa-download"></i> Baixar
+          </button>
+          <button class="btn btn-whatsapp" onclick="shareWhatsApp()">
+            <i class="fa-solid fa-share-nodes"></i> Compartilhar
+          </button>
+          <button class="btn btn-primary btn-full" onclick="generateNewVerse()">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Nova Promessa
+          </button>
+        </div>
+
+        <div class="prayer-section">
+          <h3 style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+              <i class="fa-solid fa-heart" style="color: #a855f7; font-size: 18px;"></i>
+              <span>Precisa de Oração?</span>
+          </h3>
+          <button class="btn btn-primary btn-ask" style="background:linear-gradient(135deg,#4facfe,#00f2fe)" onclick="togglePrayerForm()">
+            <i class="fa-solid fa-hands-praying"></i> Enviar Pedido de Oração
+          </button>
+
+          <div id="prayer-form" class="prayer-form">
+            <form onsubmit="submitPrayer(event)">
+              <div class="form-group">
+                <label for="name">Seu Nome (opcional)</label>
+                <input type="text" id="name" name="name" placeholder="Como podemos chamar você?">
+              </div>
+              <div class="form-group">
+                <label for="prayer">Seu Pedido de Oração *</label>
+                <textarea id="prayer" name="prayer" required placeholder="Compartilhe seu pedido conosco. Vamos orar por você!"></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary btn-ask">
+                <i class="fa-solid fa-hands-praying"></i> Enviar Pedido
+              </button>
+            </form>
+          </div>
+
+          <div id="success-message" class="success-message" style="display:none; background:linear-gradient(135deg,#10b981,#34d399); color:#fff; padding:12px; border-radius:12px; text-align:center; margin-top:10px;">
+            ✅ Pedido enviado! Estamos orando por você!
+          </div>
+        </div>
+
+        <div class="church-info">
+          <h4>COMUNIDADE BAPTISTA DA PAZ</h4>
+          <p><i class="fa-solid fa-map-pin"></i> <span>Av. Castelo Branco 18-43 - Jardim Terra Branca, Bauru</span></p>
+          <p><i class="fa-solid fa-clock"></i> <span>Cultos: Dom 19h | Sex 20h</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="refresh-btn" onclick="generateNewVerse()">🔄</button>
+
+  <script>
+    // ====== CONFIG ======
+    const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxVJfhU9Q-UQOYbrY6haa-ZXd6eA-VgvIUiZ-OQYCXHW71PvV4toPSdzv52ES4aed_W/exec";
+
+    // Versículos
+    const verses = [
+      { text:"O Senhor é meu pastor, nada me faltará.", reference:"Salmos 23:1" },
+
+      { text:"Tudo posso naquele que me fortalece.", reference:"Filipenses 4:13" },
+      { text:"O choro pode durar uma noite, mas a alegria vem pela manhã.", reference:"Salmos 30:5" },
+      { text:"Entrega o teu caminho ao Senhor; confia nele, e ele tudo fará.", reference:"Salmos 37:5" },
+      { text:"Porque eu sei os planos que tenho para vocês, planos de prosperidade e não de calamidade.", reference:"Jeremias 29:11" },
+      { text:"Não temas, porque eu sou contigo; não te assombres, porque eu sou o teu Deus.", reference:"Isaías 41:10" },
+      { text:"Busquem primeiro o Reino de Deus e a sua justiça, e todas essas coisas serão acrescentadas.", reference:"Mateus 6:33" },
+      { text:"O Senhor é a minha luz e a minha salvação; de quem terei medo?", reference:"Salmos 27:1" },
+      { text:"Lançando sobre ele toda a vossa ansiedade, porque ele tem cuidado de vós.", reference:"1 Pedro 5:7" },
+      { text:"Em tudo dai graças, porque esta é a vontade de Deus em Cristo Jesus para convosco.", reference:"1 Tessalonicenses 5:18" },
+      { text:"Ainda que eu ande pelo vale da sombra da morte, não temerei mal algum.", reference:"Salmos 23:4" },
+      { text:"Confie no Senhor de todo o seu coração e não se apoie em seu próprio entendimento.", reference:"Provérbios 3:5" },
+      { text:"O Senhor é bom, é refúgio no dia da angústia.", reference:"Naum 1:7" },
+      { text:"Aquietai-vos e sabei que eu sou Deus.", reference:"Salmos 46:10" },
+      { text:"Todas as coisas cooperam para o bem daqueles que amam a Deus.", reference:"Romanos 8:28" },
+   
+    { text:"O Senhor é minha força e o meu escudo; nele o meu coração confia.", reference:"Salmos 28:7" },
+    { text:"Mas ele foi ferido pelas nossas transgressões e esmagado pelas nossas iniquidades.", reference:"Isaías 53:5" },
+    { text:"Se Deus é por nós, quem será contra nós?", reference:"Romanos 8:31" },
+    { text:"Deem graças em todas as circunstâncias, pois esta é a vontade de Deus para vocês em Cristo Jesus.", reference:"1 Tessalonicenses 5:18" },
+    { text:"Peçam, e será dado; busquem, e encontrarão; batam, e a porta será aberta.", reference:"Mateus 7:7" },
+    { text:"O Senhor é bom para todos; as suas misericórdias alcançam todas as suas obras.", reference:"Salmos 145:9" },
+    { text:"O Senhor pelejará por vós, e vós vos calareis.", reference:"Êxodo 14:14" },
+    { text:"Aquele que habita no esconderijo do Altíssimo, à sombra do Onipotente descansará.", reference:"Salmos 91:1" },
+    { text:"Venham a mim todos os que estão cansados e sobrecarregados, e eu lhes darei descanso.", reference:"Mateus 11:28" },
+    { text:"O Senhor é bom, sua misericórdia dura para sempre.", reference:"Salmos 100:5" },
+    { text:"Bem-aventurados os limpos de coração, porque eles verão a Deus.", reference:"Mateus 5:8" },
+    { text:"O Senhor sustenta a todos os que caem e levanta a todos os abatidos.", reference:"Salmos 145:14" },
+    { text:"Seja forte e corajoso; não tenha medo nem fique apavorado, pois o Senhor, o seu Deus, está com você.", reference:"Deuteronômio 31:6" },
+    { text:"Deleite-se no Senhor, e ele atenderá aos desejos do seu coração.", reference:"Salmos 37:4" },
+    { text:"O Senhor é misericordioso e compassivo, paciente e transbordante de amor.", reference:"Salmos 103:8" },
+    { text:"Bendize, ó minha alma, ao Senhor, e tudo o que há em mim bendiga o seu santo nome.", reference:"Salmos 103:1" },
+    { text:"Quem nos separará do amor de Cristo?", reference:"Romanos 8:35" },
+    { text:"O Senhor te guardará de todo mal; ele guardará a tua alma.", reference:"Salmos 121:7" },
+    { text:"Clama a mim, e responder-te-ei, e anunciar-te-ei coisas grandes e firmes.", reference:"Jeremias 33:3" },
+    { text:"Nele temos a redenção, a remissão dos pecados.", reference:"Colossenses 1:14" },
+    { text:"Porque pela graça sois salvos, mediante a fé; e isto não vem de vós, é dom de Deus.", reference:"Efésios 2:8" },
+    { text:"Eu sou o caminho, a verdade e a vida. Ninguém vem ao Pai senão por mim.", reference:"João 14:6" },
+    { text:"Elevo os meus olhos para os montes; de onde me vem o socorro?", reference:"Salmos 121:1" },
+    { text:"O Senhor é fiel em todas as suas promessas e amoroso em todas as suas obras.", reference:"Salmos 145:13" },
+    { text:"A alegria do Senhor é a vossa força.", reference:"Neemias 8:10" },
+    { text:"Assim, se o Filho vos libertar, verdadeiramente sereis livres.", reference:"João 8:36" },
+    { text:"Deem, e será dado a vocês; uma boa medida, recalcada, sacudida e transbordante será dada.", reference:"Lucas 6:38" },
+    { text:"O Senhor é a minha rocha, a minha fortaleza e o meu libertador.", reference:"Salmos 18:2" },
+    { text:"O Senhor está perto de todos os que o invocam, de todos os que o invocam com sinceridade.", reference:"Salmos 145:18" },
+    { text:"Aquele que começou boa obra em vocês há de completá-la até o dia de Cristo Jesus.", reference:"Filipenses 1:6" },
+    
+  { text:"O Senhor é minha força e o meu escudo; nele o meu coração confia.", reference:"Salmos 28:7" },
+  { text:"Mas ele foi ferido pelas nossas transgressões e esmagado pelas nossas iniquidades.", reference:"Isaías 53:5" },
+  { text:"Se Deus é por nós, quem será contra nós?", reference:"Romanos 8:31" },
+  { text:"Deem graças em todas as circunstâncias, pois esta é a vontade de Deus para vocês em Cristo Jesus.", reference:"1 Tessalonicenses 5:18" },
+  { text:"Peçam, e será dado; busquem, e encontrarão; batam, e a porta será aberta.", reference:"Mateus 7:7" },
+  { text:"O Senhor é bom para todos; as suas misericórdias alcançam todas as suas obras.", reference:"Salmos 145:9" },
+  { text:"O Senhor pelejará por vós, e vós vos calareis.", reference:"Êxodo 14:14" },
+  { text:"Aquele que habita no esconderijo do Altíssimo, à sombra do Onipotente descansará.", reference:"Salmos 91:1" },
+  { text:"Venham a mim todos os que estão cansados e sobrecarregados, e eu lhes darei descanso.", reference:"Mateus 11:28" },
+  { text:"O Senhor é bom, sua misericórdia dura para sempre.", reference:"Salmos 100:5" },
+  { text:"Bem-aventurados os limpos de coração, porque eles verão a Deus.", reference:"Mateus 5:8" },
+  { text:"O Senhor sustenta a todos os que caem e levanta a todos os abatidos.", reference:"Salmos 145:14" },
+  { text:"Seja forte e corajoso; não tenha medo nem fique apavorado, pois o Senhor, o seu Deus, está com você.", reference:"Deuteronômio 31:6" },
+  { text:"Deleite-se no Senhor, e ele atenderá aos desejos do seu coração.", reference:"Salmos 37:4" },
+  { text:"O Senhor é misericordioso e compassivo, paciente e transbordante de amor.", reference:"Salmos 103:8" },
+  { text:"Bendize, ó minha alma, ao Senhor, e tudo o que há em mim bendiga o seu santo nome.", reference:"Salmos 103:1" },
+  { text:"Quem nos separará do amor de Cristo?", reference:"Romanos 8:35" },
+  { text:"O Senhor te guardará de todo mal; ele guardará a tua alma.", reference:"Salmos 121:7" },
+  { text:"Clama a mim, e responder-te-ei, e anunciar-te-ei coisas grandes e firmes.", reference:"Jeremias 33:3" },
+  { text:"Nele temos a redenção, a remissão dos pecados.", reference:"Colossenses 1:14" },
+  { text:"Porque pela graça sois salvos, mediante a fé; e isto não vem de vós, é dom de Deus.", reference:"Efésios 2:8" },
+  { text:"Eu sou o caminho, a verdade e a vida. Ninguém vem ao Pai senão por mim.", reference:"João 14:6" },
+  { text:"Elevo os meus olhos para os montes; de onde me vem o socorro?", reference:"Salmos 121:1" },
+  { text:"O Senhor é fiel em todas as suas promessas e amoroso em todas as suas obras.", reference:"Salmos 145:13" },
+  { text:"A alegria do Senhor é a vossa força.", reference:"Neemias 8:10" },
+  { text:"Assim, se o Filho vos libertar, verdadeiramente sereis livres.", reference:"João 8:36" },
+  { text:"Deem, e será dado a vocês; uma boa medida, recalcada, sacudida e transbordante será dada.", reference:"Lucas 6:38" },
+  { text:"O Senhor é a minha rocha, a minha fortaleza e o meu libertador.", reference:"Salmos 18:2" },
+  { text:"O Senhor está perto de todos os que o invocam, de todos os que o invocam com sinceridade.", reference:"Salmos 145:18" },
+  { text:"Aquele que começou boa obra em vocês há de completá-la até o dia de Cristo Jesus.", reference:"Filipenses 1:6" },
+
+  { text:"Bem-aventurados os que choram, porque serão consolados.", reference:"Mateus 5:4" },
+  { text:"Porque o Filho do homem veio buscar e salvar o que se havia perdido.", reference:"Lucas 19:10" },
+  { text:"Guardarei a tua palavra no meu coração para não pecar contra ti.", reference:"Salmos 119:11" },
+  { text:"Se alguém está em Cristo, é nova criatura; as coisas antigas já passaram.", reference:"2 Coríntios 5:17" },
+  { text:"Lancem sobre ele toda a sua ansiedade, porque ele cuida de vocês.", reference:"1 Pedro 5:7" },
+  { text:"O Senhor é refúgio para os oprimidos, uma torre segura na hora da adversidade.", reference:"Salmos 9:9" },
+  { text:"Mas buscai primeiro o seu reino e a sua justiça, e todas essas coisas vos serão acrescentadas.", reference:"Mateus 6:33" },
+  { text:"Nenhuma arma forjada contra ti prosperará.", reference:"Isaías 54:17" },
+  { text:"Aquele que não poupou o seu próprio Filho, mas o entregou por todos nós, como não nos dará com ele todas as coisas?", reference:"Romanos 8:32" },
+  { text:"O Senhor cumpre os desejos daqueles que o temem.", reference:"Salmos 145:19" },
+  { text:"Esforcem-se para viver em paz com todos e para serem santos.", reference:"Hebreus 12:14" },
+  { text:"A palavra do Senhor é perfeita e refrigera a alma.", reference:"Salmos 19:7" },
+  { text:"O Senhor firma os passos do homem, quando a conduta deste lhe agrada.", reference:"Salmos 37:23" },
+  { text:"O Senhor guarda os estrangeiros e ampara o órfão e a viúva.", reference:"Salmos 146:9" },
+  { text:"Melhor é o pouco com o temor do Senhor, do que um grande tesouro onde há inquietação.", reference:"Provérbios 15:16" },
+  { text:"Tudo quanto pedirdes em oração, crendo, recebereis.", reference:"Mateus 21:22" },
+  { text:"O Senhor é bom, um refúgio em tempos de angústia. Ele protege os que nele confiam.", reference:"Naum 1:7" },
+  { text:"Perto está o Senhor dos que têm o coração quebrantado.", reference:"Salmos 34:18" },
+  { text:"Seja a vossa vida sem avareza. Contentai-vos com as coisas que tendes.", reference:"Hebreus 13:5" },
+  { text:"Vós sois a luz do mundo. Não se pode esconder uma cidade edificada sobre um monte.", reference:"Mateus 5:14" },
+  { text:"O Senhor me respondeu: a minha graça te basta, porque o meu poder se aperfeiçoa na fraqueza.", reference:"2 Coríntios 12:9" },
+  { text:"Deem graças ao Senhor porque ele é bom; o seu amor dura para sempre.", reference:"Salmos 136:1" },
+  { text:"Ele sara os de coração quebrantado e cuida das suas feridas.", reference:"Salmos 147:3" },
+  { text:"Não se turbe o vosso coração; crede em Deus, crede também em mim.", reference:"João 14:1" },
+  { text:"Aquele que tem os meus mandamentos e os guarda, esse é o que me ama.", reference:"João 14:21" },
+  { text:"O Senhor é justo em todos os seus caminhos e bondoso em todas as suas obras.", reference:"Salmos 145:17" },
+  { text:"Não se deixem vencer pelo mal, mas vençam o mal com o bem.", reference:"Romanos 12:21" },
+  { text:"O Senhor é a minha força e o meu cântico; ele é a minha salvação.", reference:"Êxodo 15:2" },
+  { text:"A paz de Deus, que excede todo entendimento, guardará o coração e a mente de vocês.", reference:"Filipenses 4:7" },
+  { text:"Sede fortes e corajosos; não temais, nem vos atemorizeis, porque o Senhor vosso Deus é convosco.", reference:"Josué 1:9" },
+
+  
+  { text:"O Senhor é bom para os que nele esperam, para a alma que o busca.", reference:"Lamentações 3:25" },
+  { text:"O Senhor é o meu rochedo, a minha fortaleza e o meu libertador.", reference:"2 Samuel 22:2" },
+  { text:"A fé é a certeza daquilo que esperamos e a prova das coisas que não vemos.", reference:"Hebreus 11:1" },
+  { text:"Buscai ao Senhor enquanto se pode achar, invocai-o enquanto está perto.", reference:"Isaías 55:6" },
+  { text:"O Senhor é quem vai adiante de ti; ele será contigo, não te deixará, nem te desamparará.", reference:"Deuteronômio 31:8" },
+  { text:"O Senhor é a minha porção, diz a minha alma; portanto, esperarei nele.", reference:"Lamentações 3:24" },
+  { text:"Aquele que guarda Israel não dormita nem dorme.", reference:"Salmos 121:4" },
+  { text:"Grandes coisas fez o Senhor por nós, pelas quais estamos alegres.", reference:"Salmos 126:3" },
+  { text:"O Senhor é a minha força e o meu escudo; nele confiou o meu coração, e fui socorrido.", reference:"Salmos 28:7" },
+  { text:"Mas os que esperam no Senhor renovarão as suas forças; subirão com asas como águias.", reference:"Isaías 40:31" },
+  { text:"Não se deixem dominar pela ansiedade do amanhã, pois o amanhã cuidará de si mesmo.", reference:"Mateus 6:34" },
+  { text:"O Senhor dá força ao seu povo; o Senhor abençoa com paz o seu povo.", reference:"Salmos 29:11" },
+  { text:"A bênção do Senhor traz riqueza, e não inclui dor alguma.", reference:"Provérbios 10:22" },
+  { text:"Eu sou a videira, vós as varas; quem permanece em mim, e eu nele, esse dá muito fruto.", reference:"João 15:5" },
+  { text:"Confiai no Senhor perpetuamente, porque o Senhor Deus é uma rocha eterna.", reference:"Isaías 26:4" },
+  { text:"O Senhor é o meu ajudador; não temerei o que me possa fazer o homem.", reference:"Hebreus 13:6" },
+  { text:"Porque grande é o Senhor e mui digno de ser louvado.", reference:"Salmos 96:4" },
+  { text:"Busquei o Senhor, e ele me respondeu; livrou-me de todos os meus temores.", reference:"Salmos 34:4" },
+  { text:"Se confessarmos os nossos pecados, ele é fiel e justo para nos perdoar os pecados.", reference:"1 João 1:9" },
+  { text:"Aquele que está em vocês é maior do que aquele que está no mundo.", reference:"1 João 4:4" },
+  { text:"Vinde a mim todos os que estais cansados e oprimidos, e eu vos aliviarei.", reference:"Mateus 11:28" },
+  { text:"Não temas, ó pequeno rebanho, porque foi do agrado do Pai dar-vos o reino.", reference:"Lucas 12:32" },
+  { text:"Bem-aventurados os pacificadores, porque serão chamados filhos de Deus.", reference:"Mateus 5:9" },
+  { text:"Se andarmos na luz, como ele está na luz, temos comunhão uns com os outros.", reference:"1 João 1:7" },
+  { text:"O Senhor reina; regozije-se a terra; alegrem-se as muitas ilhas.", reference:"Salmos 97:1" },
+  { text:"Sede uns para com os outros benignos, compassivos, perdoando-vos uns aos outros.", reference:"Efésios 4:32" },
+  { text:"O Senhor é bom para aqueles cuja esperança está nele.", reference:"Lamentações 3:25" },
+  { text:"Não vos canseis de fazer o bem, porque a seu tempo ceifaremos, se não houvermos desfalecido.", reference:"Gálatas 6:9" },
+  { text:"Bem-aventurados os mansos, porque herdarão a terra.", reference:"Mateus 5:5" },
+  { text:"Tudo quanto fizerdes, fazei-o de todo o coração, como para o Senhor.", reference:"Colossenses 3:23" },
+
+  
+  { text:"Deus é o nosso refúgio e fortaleza, socorro bem presente na angústia.", reference:"Salmos 46:1" },
+  { text:"Ainda que meu pai e minha mãe me abandonem, o Senhor me acolherá.", reference:"Salmos 27:10" },
+  { text:"Bem-aventurados os que têm fome e sede de justiça, porque serão fartos.", reference:"Mateus 5:6" },
+  { text:"O Senhor abre os olhos aos cegos; o Senhor levanta os abatidos.", reference:"Salmos 146:8" },
+  { text:"O Senhor é quem perdoa todas as tuas iniquidades e sara todas as tuas enfermidades.", reference:"Salmos 103:3" },
+  { text:"O Senhor é o meu pastor; de nada terei falta.", reference:"Salmos 23:1" },
+  { text:"O Senhor reina! Tremam os povos.", reference:"Salmos 99:1" },
+  { text:"Felizes os que ouvem a palavra de Deus e a guardam.", reference:"Lucas 11:28" },
+  { text:"O Senhor dá sabedoria; da sua boca procedem o conhecimento e o entendimento.", reference:"Provérbios 2:6" },
+  { text:"Vós sois o sal da terra; se o sal perder o sabor, com que se há de salgar?", reference:"Mateus 5:13" },
+  { text:"O Senhor examina os justos, mas os ímpios e os que amam a violência, a sua alma os aborrece.", reference:"Salmos 11:5" },
+  { text:"Aquele que teme ao Senhor possui forte amparo, e isso é refúgio para os seus filhos.", reference:"Provérbios 14:26" },
+  { text:"O Senhor é misericordioso e justo; o nosso Deus é compassivo.", reference:"Salmos 116:5" },
+  { text:"Ame o Senhor, o seu Deus, de todo o coração, de toda a sua alma e de todas as suas forças.", reference:"Deuteronômio 6:5" },
+  { text:"Ensina-nos a contar os nossos dias, para que alcancemos coração sábio.", reference:"Salmos 90:12" },
+  { text:"O Senhor sustenta todos os que caem e levanta todos os oprimidos.", reference:"Salmos 145:14" },
+  { text:"Porque Deus não nos deu espírito de covardia, mas de poder, amor e equilíbrio.", reference:"2 Timóteo 1:7" },
+  { text:"O Senhor é a fortaleza da minha vida; de quem me recearei?", reference:"Salmos 27:1" },
+  { text:"Não se cansem de orar.", reference:"1 Tessalonicenses 5:17" },
+  { text:"Cantem ao Senhor um cântico novo, porque ele tem feito maravilhas.", reference:"Salmos 98:1" },
+  { text:"Não andem ansiosos por coisa alguma, mas em tudo, pela oração e súplicas, apresentem seus pedidos a Deus.", reference:"Filipenses 4:6" },
+  { text:"O Senhor não retém o bem aos que andam na sinceridade.", reference:"Salmos 84:11" },
+  { text:"O Senhor é a minha rocha, e nele me refugio.", reference:"Salmos 18:2" },
+  { text:"Como um pai se compadece de seus filhos, assim o Senhor se compadece dos que o temem.", reference:"Salmos 103:13" },
+  { text:"A tua palavra é lâmpada para os meus pés e luz para o meu caminho.", reference:"Salmos 119:105" },
+  { text:"O Senhor é longânimo e grande em misericórdia.", reference:"Números 14:18" },
+  { text:"Vinde, adoremos e prostremo-nos; ajoelhemos diante do Senhor que nos criou.", reference:"Salmos 95:6" },
+  { text:"Não se deixem enganar: de Deus não se zomba; o que o homem semear, isso também colherá.", reference:"Gálatas 6:7" },
+  { text:"Elevo os meus olhos para os montes; de onde virá o meu socorro? O meu socorro vem do Senhor.", reference:"Salmos 121:1-2" },
+  { text:"Provem e vejam como o Senhor é bom. Como é feliz o homem que nele se refugia!", reference:"Salmos 34:8" },
+
+  
+  { text:"O Senhor firma os passos do homem bom e no seu caminho se compraz.", reference:"Salmos 37:23" },
+  { text:"Tudo o que fizerem, seja em palavra ou em ação, façam em nome do Senhor Jesus.", reference:"Colossenses 3:17" },
+  { text:"A tua misericórdia, Senhor, chega até os céus; a tua fidelidade vai até às nuvens.", reference:"Salmos 36:5" },
+  { text:"Deem graças em todas as coisas, porque esta é a vontade de Deus em Cristo Jesus.", reference:"1 Tessalonicenses 5:18" },
+  { text:"Não se esqueçam de fazer o bem e de repartir com os outros o que vocês têm.", reference:"Hebreus 13:16" },
+  { text:"O Senhor é quem dá força ao cansado e multiplica as forças ao que não tem nenhum vigor.", reference:"Isaías 40:29" },
+  { text:"Não se turbe o vosso coração; tende fé em Deus, tende fé também em mim.", reference:"João 14:1" },
+  { text:"Agrada-te do Senhor, e ele satisfará os desejos do teu coração.", reference:"Salmos 37:4" },
+  { text:"Aquele que anda em sinceridade anda seguro.", reference:"Provérbios 10:9" },
+  { text:"O Senhor se agrada dos que o temem, dos que colocam a esperança no seu amor leal.", reference:"Salmos 147:11" },
+  { text:"Andemos decentemente, como em pleno dia, não em orgias e bebedices, mas revesti-vos do Senhor Jesus.", reference:"Romanos 13:13-14" },
+  { text:"Em Deus faremos proezas, e ele pisará os nossos inimigos.", reference:"Salmos 60:12" },
+  { text:"Não saia da vossa boca nenhuma palavra torpe, mas só a que for boa para edificação.", reference:"Efésios 4:29" },
+  { text:"A graça do Senhor Jesus Cristo, o amor de Deus e a comunhão do Espírito Santo sejam com todos vocês.", reference:"2 Coríntios 13:13" },
+  { text:"Melhor é a sabedoria do que rubis, e tudo o que mais se deseja não se pode comparar com ela.", reference:"Provérbios 8:11" },
+  { text:"Santifica-os na verdade; a tua palavra é a verdade.", reference:"João 17:17" },
+  { text:"Assim resplandeça a vossa luz diante dos homens, para que vejam as vossas boas obras.", reference:"Mateus 5:16" },
+  { text:"O Senhor é a minha rocha e a minha cidadela; o meu Deus é o meu rochedo em quem me refugio.", reference:"Salmos 18:2" },
+  { text:"Guardai-vos de toda avareza, porque a vida de qualquer não consiste na abundância do que possui.", reference:"Lucas 12:15" },
+  { text:"Melhor é o pouco com justiça, do que grandes rendimentos com injustiça.", reference:"Provérbios 16:8" },
+  { text:"O Senhor conhece os que são seus.", reference:"2 Timóteo 2:19" },
+  { text:"Deem, e lhes será dado; uma boa medida, sacudida, transbordante vos deitarão no regaço.", reference:"Lucas 6:38" },
+  { text:"Cantarei ao Senhor, porque tem feito muito bem a mim.", reference:"Salmos 13:6" },
+  { text:"O Senhor cumpre os desejos do coração dos que o temem; ouve o seu clamor e os salva.", reference:"Salmos 145:19" },
+  { text:"Bem-aventurados os que guardam os seus testemunhos e o buscam de todo o coração.", reference:"Salmos 119:2" },
+  { text:"Não temas, crê somente.", reference:"Marcos 5:36" },
+  { text:"Em tudo somos atribulados, mas não angustiados; perplexos, mas não desanimados.", reference:"2 Coríntios 4:8" },
+  { text:"Escondi a tua palavra no meu coração, para eu não pecar contra ti.", reference:"Salmos 119:11" },
+  { text:"Se o Senhor não edificar a casa, em vão trabalham os que a edificam.", reference:"Salmos 127:1" },
+  { text:"O Senhor se agrada daqueles que o temem, dos que esperam na sua misericórdia.", reference:"Salmos 147:11" },
+
+  
+  { text:"Mas ele me disse: A minha graça te basta, porque o meu poder se aperfeiçoa na fraqueza.", reference:"2 Coríntios 12:9" },
+  { text:"O Senhor é bom, fortaleza no dia da angústia, e conhece os que nele confiam.", reference:"Naum 1:7" },
+  { text:"Bem-aventurado aquele cuja transgressão é perdoada, cujo pecado é coberto.", reference:"Salmos 32:1" },
+  { text:"O Senhor é compassivo e misericordioso, longânimo e assaz benigno.", reference:"Salmos 103:8" },
+  { text:"Deus é fiel, o qual vos não deixará tentar acima do que podeis.", reference:"1 Coríntios 10:13" },
+  { text:"Não vos conformeis com este mundo, mas transformai-vos pela renovação da vossa mente.", reference:"Romanos 12:2" },
+  { text:"Deem graças ao Senhor, porque ele é bom; o seu amor dura para sempre.", reference:"Salmos 107:1" },
+  { text:"O Senhor é refúgio para o necessitado em sua aflição.", reference:"Salmos 9:9" },
+  { text:"Lâmpada para os meus pés é a tua palavra, e luz para o meu caminho.", reference:"Salmos 119:105" },
+  { text:"O Senhor guarda todos os que o amam, mas os ímpios serão destruídos.", reference:"Salmos 145:20" },
+  { text:"Ele me faz andar sobre as minhas alturas.", reference:"Habacuque 3:19" },
+  { text:"O Senhor é a minha força e o meu cântico; ele é a minha salvação.", reference:"Isaías 12:2" },
+  { text:"E tudo quanto pedirdes em oração, crendo, recebereis.", reference:"Mateus 21:22" },
+  { text:"O Senhor é justo em todos os seus caminhos e santo em todas as suas obras.", reference:"Salmos 145:17" },
+  { text:"Aquele que habita no esconderijo do Altíssimo descansará à sombra do Onipotente.", reference:"Salmos 91:1" },
+  { text:"Pois eu bem sei os planos que estou projetando para vós, diz o Senhor; planos de paz e não de mal.", reference:"Jeremias 29:11" },
+  { text:"O Senhor é bom para todos, e as suas ternas misericórdias estão sobre todas as suas obras.", reference:"Salmos 145:9" },
+  { text:"Não temas, porque eu sou contigo; não te assombres, porque eu sou o teu Deus.", reference:"Isaías 41:10" },
+  { text:"E conhecereis a verdade, e a verdade vos libertará.", reference:"João 8:32" },
+  { text:"O Senhor é a minha luz e a minha salvação; a quem temerei?", reference:"Salmos 27:1" },
+  { text:"A alegria do Senhor é a nossa força.", reference:"Neemias 8:10" },
+  { text:"E o meu Deus suprirá todas as vossas necessidades segundo as suas riquezas em glória.", reference:"Filipenses 4:19" },
+  { text:"O Senhor dá força ao cansado e renova as energias dos fracos.", reference:"Isaías 40:29" },
+  { text:"Ainda que eu andasse pelo vale da sombra da morte, não temeria mal algum.", reference:"Salmos 23:4" },
+  { text:"Porque para Deus nada é impossível.", reference:"Lucas 1:37" },
+  { text:"Aquele que começou boa obra em vós há de completá-la até ao dia de Cristo Jesus.", reference:"Filipenses 1:6" },
+  { text:"Não andeis ansiosos de coisa alguma; em tudo, porém, sejam conhecidas diante de Deus as vossas petições.", reference:"Filipenses 4:6" },
+  { text:"Ele cura os de coração quebrantado e trata das suas feridas.", reference:"Salmos 147:3" },
+  { text:"Buscai ao Senhor de todo o coração, e o achareis.", reference:"Jeremias 29:13" },
+  { text:"O Senhor é o meu refúgio e a minha fortaleza, o meu Deus, em quem confio.", reference:"Salmos 91:2" },
+
+  
+  { text:"O Senhor é a minha rocha, a minha fortaleza e o meu libertador.", reference:"Salmos 18:2" },
+  { text:"O Senhor dá força ao seu povo; o Senhor abençoa o seu povo com paz.", reference:"Salmos 29:11" },
+  { text:"Em tudo somos mais que vencedores, por meio daquele que nos amou.", reference:"Romanos 8:37" },
+  { text:"Deus é amor; aquele que permanece no amor permanece em Deus.", reference:"1 João 4:16" },
+  { text:"Não se cansem de fazer o bem, pois no tempo próprio colheremos, se não desanimarmos.", reference:"Gálatas 6:9" },
+  { text:"O Senhor é o meu refúgio e a minha cidadela; o meu Deus é a minha rocha, em quem me refugio.", reference:"Salmos 18:2" },
+  { text:"Porque o Senhor não rejeitará o seu povo, nem desamparará a sua herança.", reference:"Salmos 94:14" },
+  { text:"O Senhor é fiel em todas as suas palavras e santo em todas as suas obras.", reference:"Salmos 145:13" },
+  { text:"Se confessarmos os nossos pecados, ele é fiel e justo para nos perdoar.", reference:"1 João 1:9" },
+  { text:"Eu sei que o meu Redentor vive e que por fim se levantará sobre a terra.", reference:"Jó 19:25" },
+  { text:"Deem graças em todas as circunstâncias, pois esta é a vontade de Deus.", reference:"1 Tessalonicenses 5:18" },
+  { text:"Assim, se alguém está em Cristo, é nova criatura; as coisas antigas já passaram.", reference:"2 Coríntios 5:17" },
+  { text:"Tudo posso naquele que me fortalece.", reference:"Filipenses 4:13" },
+  { text:"O Senhor é a minha força e o meu cântico; ele é a minha salvação.", reference:"Êxodo 15:2" },
+  { text:"Sede alegres na esperança, pacientes na tribulação e perseverantes na oração.", reference:"Romanos 12:12" },
+  { text:"Não andeis ansiosos por coisa alguma.", reference:"Filipenses 4:6" },
+  { text:"Aquele que tem o Filho tem a vida; aquele que não tem o Filho de Deus não tem a vida.", reference:"1 João 5:12" },
+  { text:"O Senhor dos Exércitos está conosco; o Deus de Jacó é o nosso refúgio.", reference:"Salmos 46:7" },
+  { text:"O Senhor é bom para aqueles cuja esperança está nele, para a alma que o busca.", reference:"Lamentações 3:25" },
+  { text:"Buscai ao Senhor e a sua força; buscai a sua face continuamente.", reference:"1 Crônicas 16:11" },
+  { text:"A palavra do Senhor é viva e eficaz, e mais afiada que qualquer espada de dois gumes.", reference:"Hebreus 4:12" },
+  { text:"O Senhor é quem te guarda; o Senhor é a tua sombra à tua direita.", reference:"Salmos 121:5" },
+  { text:"O Senhor não retarda a sua promessa, ainda que alguns a têm por tardia.", reference:"2 Pedro 3:9" },
+  { text:"O Senhor é justo; ele ama a justiça; os retos contemplarão a sua face.", reference:"Salmos 11:7" },
+  { text:"Eu sou o Alfa e o Ômega, o primeiro e o último, o princípio e o fim.", reference:"Apocalipse 22:13" },
+  { text:"Quem nos separará do amor de Cristo? Nem morte, nem vida, nem anjos, nem principados.", reference:"Romanos 8:35" },
+  { text:"O Senhor é a minha porção, diz a minha alma; portanto, esperarei nele.", reference:"Lamentações 3:24" },
+  { text:"Felizes os que ouvem a palavra de Deus e a guardam!", reference:"Lucas 11:28" },
+  { text:"Deus é o nosso amparo e fortaleza, socorro bem presente nas tribulações.", reference:"Salmos 46:1" },
+  { text:"Bem-aventurados os que têm fome e sede de justiça, porque serão fartos.", reference:"Mateus 5:6" },
+
+  
+  { text:"O Senhor é bom para todos, e a sua misericórdia está sobre todas as suas obras.", reference:"Salmos 145:9" },
+  { text:"Se andarmos na luz, como ele está na luz, temos comunhão uns com os outros.", reference:"1 João 1:7" },
+  { text:"Esforcem-se para viver em paz com todos e para serem santos.", reference:"Hebreus 12:14" },
+  { text:"Bem-aventurados os pacificadores, porque serão chamados filhos de Deus.", reference:"Mateus 5:9" },
+  { text:"Não se deixem vencer pelo mal, mas vençam o mal com o bem.", reference:"Romanos 12:21" },
+  { text:"A lei do Senhor é perfeita, e restaura a alma.", reference:"Salmos 19:7" },
+  { text:"O Senhor sustenta os que caem e levanta os abatidos.", reference:"Salmos 145:14" },
+  { text:"Eu sou o bom pastor; o bom pastor dá a vida pelas ovelhas.", reference:"João 10:11" },
+  { text:"Em paz me deitarei e dormirei, porque só tu, Senhor, me fazes habitar em segurança.", reference:"Salmos 4:8" },
+  { text:"O Senhor é o mesmo ontem, hoje e eternamente.", reference:"Hebreus 13:8" },
+  { text:"Eu vos escrevi, jovens, porque sois fortes, e a palavra de Deus permanece em vós.", reference:"1 João 2:14" },
+  { text:"Ele me faz repousar em pastos verdejantes. Leva-me para junto das águas de descanso.", reference:"Salmos 23:2" },
+  { text:"O Senhor está perto dos que têm o coração quebrantado.", reference:"Salmos 34:18" },
+  { text:"Felizes os que confiam no Senhor.", reference:"Provérbios 16:20" },
+  { text:"Quem teme ao Senhor possui uma fortaleza segura, refúgio para os seus filhos.", reference:"Provérbios 14:26" },
+  { text:"Não vos canseis de orar.", reference:"1 Tessalonicenses 5:17" },
+  { text:"A bondade do Senhor enche a terra.", reference:"Salmos 33:5" },
+  { text:"Sede uns para com os outros bondosos e compassivos, perdoando-vos uns aos outros.", reference:"Efésios 4:32" },
+  { text:"Bem-aventurados os mansos, porque herdarão a terra.", reference:"Mateus 5:5" },
+  { text:"Tudo o que fizerdes, fazei-o de todo o coração, como ao Senhor.", reference:"Colossenses 3:23" },
+  { text:"Aos homens é impossível, mas a Deus tudo é possível.", reference:"Mateus 19:26" },
+  { text:"O Senhor me fortalece e guarda o meu caminho.", reference:"2 Tessalonicenses 3:3" },
+  { text:"Deus é luz; nele não há treva alguma.", reference:"1 João 1:5" },
+  { text:"E conheceremos, se prosseguirmos em conhecer ao Senhor.", reference:"Oséias 6:3" },
+  { text:"Bem-aventurados os que guardam os seus testemunhos, e o buscam de todo o coração.", reference:"Salmos 119:2" },
+  { text:"O Senhor é a minha torre forte, o refúgio em tempos de angústia.", reference:"Provérbios 18:10" },
+  { text:"O Senhor é misericordioso e cheio de compaixão; tardio em irar-se e grande em benignidade.", reference:"Salmos 145:8" },
+  { text:"Regozijai-vos sempre no Senhor; outra vez digo, regozijai-vos.", reference:"Filipenses 4:4" },
+  { text:"O Senhor é o meu amparo e a minha fortaleza, socorro bem presente nas tribulações.", reference:"Salmos 46:1" },
+  { text:"Deus é fiel; ele os fortalecerá e os guardará do maligno.", reference:"2 Tessalonicenses 3:3" },
+
+
+  { text:"Deus é o nosso refúgio e fortaleza, auxílio sempre presente na adversidade.", reference:"Salmos 46:1" },
+  { text:"O Senhor te abençoará e guardará; o Senhor fará resplandecer o seu rosto sobre ti.", reference:"Números 6:24-25" },
+  { text:"O Senhor é a minha força e o meu cântico; ele é a minha salvação.", reference:"Salmos 118:14" },
+  { text:"Bem-aventurados os que confiam no Senhor e fazem dele a sua esperança.", reference:"Jeremias 17:7" },
+  { text:"A tua palavra é a verdade desde o princípio.", reference:"Salmos 119:160" },
+  { text:"O Senhor é o meu escudo e nele confia o meu coração.", reference:"Salmos 28:7" },
+  { text:"O Senhor é bom e reto; por isso ensina o caminho aos pecadores.", reference:"Salmos 25:8" },
+  { text:"Felizes os que guardam a justiça e o que pratica a retidão em todo tempo.", reference:"Salmos 106:3" },
+  { text:"O Senhor me cerca por trás e pela frente, e põe a mão sobre mim.", reference:"Salmos 139:5" },
+  { text:"O Senhor é justo em todos os seus caminhos e santo em todas as suas obras.", reference:"Salmos 145:17" },
+  { text:"O Senhor se agrada daqueles que o temem, dos que esperam na sua misericórdia.", reference:"Salmos 147:11" },
+  { text:"Não temerás o terror da noite nem a flecha que voa de dia.", reference:"Salmos 91:5" },
+  { text:"O Senhor é a minha luz; ele ilumina a minha escuridão.", reference:"Salmos 18:28" },
+  { text:"Felizes os que são perseguidos por causa da justiça, porque deles é o Reino dos Céus.", reference:"Mateus 5:10" },
+  { text:"O Senhor dá força e poder ao seu povo; bendito seja Deus!", reference:"Salmos 68:35" },
+  { text:"O Senhor é a minha esperança desde a minha juventude.", reference:"Jeremias 17:17" },
+  { text:"Se permaneceres em mim, e as minhas palavras permanecerem em vós, pedireis o que quiserdes, e vos será feito.", reference:"João 15:7" },
+  { text:"O Senhor é quem perdoa todas as tuas iniquidades e sara todas as tuas enfermidades.", reference:"Salmos 103:3" },
+  { text:"Felizes os que choram, porque serão consolados.", reference:"Mateus 5:4" },
+  { text:"Porque dele e por ele e para ele são todas as coisas.", reference:"Romanos 11:36" },
+  { text:"O Senhor é bom para com aqueles que nele esperam.", reference:"Lamentações 3:25" },
+  { text:"A misericórdia do Senhor é de eternidade a eternidade sobre os que o temem.", reference:"Salmos 103:17" },
+  { text:"Aquele que está em vocês é maior do que aquele que está no mundo.", reference:"1 João 4:4" },
+  { text:"O Senhor é quem guarda a tua vida; o Senhor guardará a tua saída e a tua entrada.", reference:"Salmos 121:7-8" },
+  { text:"Vinde, adoremos e prostremo-nos; ajoelhemos diante do Senhor, que nos criou.", reference:"Salmos 95:6" },
+  { text:"Eu sou o caminho, a verdade e a vida. Ninguém vem ao Pai senão por mim.", reference:"João 14:6" },
+  { text:"A paz de Cristo domine em vossos corações.", reference:"Colossenses 3:15" },
+  { text:"Felizes os íntegros em seu caminho, os que andam na lei do Senhor.", reference:"Salmos 119:1" },
+  { text:"O Senhor reina, está vestido de majestade.", reference:"Salmos 93:1" },
+  { text:"E o Deus da esperança vos encha de todo o gozo e paz em vossa fé.", reference:"Romanos 15:13" }
+
+    ];
+
+    // Backgrounds
+    const backgrounds = [
+      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=900&fit=crop",
+      "https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=1200&h=900&fit=crop",
+
+      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=800&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=800&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=800&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=800&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=800&h=600&fit=crop',
+
+  // novas 30
+  'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&h=600&fit=crop',
+ // 'https://images.unsplash.com/photo-1470770903676-69b98201ea1c?w=800&h=600&fit=crop',
+ // 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?w=800&h=600&fit=crop',
+  //'https://images.unsplash.com/photo-1493244040629-496f6d136cc3?w=800&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1443890923422-7819ed4101c0?w=800&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=800&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=800&h=600&fit=crop',
+ // 'https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=800&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=800&h=600&fit=crop',
+ // 'https://images.unsplash.com/photo-1441829266145-b4f9b90f8bd6?w=800&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=800&h=600&fit=crop',
+  //'https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=800&h=600&fit=crop',
+ // 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?w=800&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?w=800&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=800&h=600&fit=crop',
+  //'https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=800&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=800&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1499346030926-9a72daac6c63?w=1200&h=900&fit=crop',
+
+
+
+
+
+
+  'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1200&h=900&fit=crop',
+  'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1200&h=900&fit=crop',
+  'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1200&h=900&fit=crop',
+
+
+
+  'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1470770903676-69b98201ea1c?w=800&h=600&fit=crop',
+  //'https://images.unsplash.com/photo-1441829266145-b4f9b90f8bd6?w=800&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=800&h=600&fit=crop',
+
+      
+
+
+      "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1200&h=900&fit=crop"
+    ];
+
+    let currentVerse, currentBackground, generatedImageData;
+
+    let lastBucket = null;
+    let isRendering = false;
+    function widthBucket(){ return window.innerWidth <= 768 ? 'mobile' : 'desktop'; }
+
+    window.addEventListener('load', () => {
+      recordMetric('pageViews');
+      lastBucket = widthBucket();
+      flushOutbox();
+      generateNewVerse();
+    });
+
+    window.addEventListener('resize', debounce(() => {
+      const b = widthBucket();
+      if (b !== lastBucket) {
+        lastBucket = b;
+        generateNewVerse();
+      }
+    }, 400));
+
+    window.addEventListener('orientationchange', () => {
+      setTimeout(() => {
+        const b = widthBucket();
+        if (b !== lastBucket) {
+          lastBucket = b;
+          generateNewVerse();
+        }
+      }, 250);
+    });
+
+    function generateNewVerse(){
+      if (isRendering) return;
+      isRendering = true;
+
+      document.getElementById('loading-container').style.display='block';
+      document.getElementById('canvas-container').style.display='none';
+      document.getElementById('action-container').style.display='none';
+      document.querySelector('.refresh-btn').style.display='none';
+
+      currentVerse = verses[Math.floor(Math.random()*verses.length)];
+      currentBackground = backgrounds[Math.floor(Math.random()*backgrounds.length)];
+      recordMetric('versesGenerated');
+
+      const img = new Image();
+      img.crossOrigin='anonymous';
+      img.onload = ()=> { drawCard(img); isRendering = false; };
+      img.onerror = ()=> { drawCard();    isRendering = false; };
+      img.src = currentBackground + (currentBackground.includes('?')?'&':'?') + 'cb=' + Date.now();
+    }
+
+    function getLayout(){
+      const isMobile = window.innerWidth <= 768;
+      return {
+        W: 800,
+        H: isMobile ? 720 : 600,
+        titleSize: isMobile ? 40 : 36,
+        refSize: isMobile ? 24 : 22,
+        lh: isMobile ? 52 : 46,
+        startY: isMobile ? 260 : 280,
+        maxTextW: isMobile ? 740 : 700
+      };
+    }
+
+    function drawCard(bgImage){
+      const {W,H,titleSize,refSize,lh,startY,maxTextW} = getLayout();
+      const canvas = document.getElementById('verse-canvas');
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = W * dpr; canvas.height = H * dpr; canvas.style.width = '100%';
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+
+      if (bgImage){
+        ctx.drawImage(bgImage, 0, 0, W, H);
+        const overlay = ctx.createLinearGradient(0,0,0,H);
+        overlay.addColorStop(0, 'rgba(0,0,0,0.25)');
+        overlay.addColorStop(1, 'rgba(0,0,0,0.55)');
+        ctx.fillStyle = overlay; ctx.fillRect(0,0,W,H);
+      } else {
+        const g = ctx.createLinearGradient(0,0,W,H);
+        g.addColorStop(0,'#667eea'); g.addColorStop(1,'#764ba2');
+        ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+      }
+
+      ctx.fillStyle='#fff'; ctx.textAlign='center';
+      ctx.shadowColor='rgba(0,0,0,.85)'; ctx.shadowBlur=12;
+
+      ctx.font = `700 ${titleSize}px "Playfair Display", Georgia, serif`;
+      const lastY = wrapText(ctx, currentVerse.text, W/2, startY, maxTextW, lh);
+
+      ctx.font = `italic ${refSize}px Georgia, serif`;
+      ctx.fillText((currentVerse.reference||'').trim(), W/2, Math.min(lastY + 40, H-90));
+
+      ctx.shadowBlur=8; ctx.font='bold 20px Inter, Arial, sans-serif';
+      ctx.fillText('COMUNIDADE BAPTISTA DA PAZ', W/2, H-40);
+      ctx.font='600 15px Inter, Arial, sans-serif';
+      ctx.fillText('Av. Castelo Branco 18-43 - Jardim Terra Branca, Bauru', W/2, H-20);
+
+      generatedImageData = canvas.toDataURL('image/png');
+
+      document.getElementById('loading-container').style.display='none';
+      document.getElementById('canvas-container').style.display='block';
+      document.getElementById('action-container').style.display='block';
+      document.querySelector('.refresh-btn').style.display='block';
+    }
+
+    function wrapText(ctx, text, x, y, maxWidth, lineHeight){
+      const words = (text||'').trim().split(' '); let line=''; let currentY=y;
+      for(let n=0;n<words.length;n++){
+        const test = line + words[n] + ' ';
+        if (ctx.measureText(test).width > maxWidth && n>0){
+          ctx.fillText(line, x, currentY); line = words[n] + ' '; currentY += lineHeight;
+        } else line = test;
+      }
+      ctx.fillText(line, x, currentY);
+      return currentY;
+    }
+
+    function downloadImage(){
+      recordMetric('downloads');
+      const a = document.createElement('a');
+      a.download = `promessa-${Date.now()}.png`;
+      a.href = generatedImageData;
+      a.click();
+    }
+
+    function shareWhatsApp(){
+      recordMetric('shares');
+      const text = `🙏 *Promessa do Dia*\n\n"${currentVerse.text}"\n_${(currentVerse.reference||'').trim()}_\n\n` +
+                   `✨ Receba sua promessa também!\n📱 COMUNIDADE BAPTISTA DA PAZ\nAv. Castelo Branco 18-43 - Jardim Terra Branca, Bauru`;
+      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+    }
+
+    function togglePrayerForm(){
+      document.getElementById('prayer-form').classList.toggle('active');
+    }
+
+    // ====== ENVIO OTIMISTA + OUTBOX ======
+    const OUTBOX_KEY = 'prayer_outbox_v1';
+    let isSubmitting = false;
+
+    function sendToSheets(payload){
+      try {
+        if (navigator.sendBeacon) {
+          const blob = new Blob([JSON.stringify(payload)], { type: 'text/plain;charset=UTF-8' });
+          return navigator.sendBeacon(SHEETS_WEBAPP_URL, blob);
+        }
+      } catch (_) {}
+      try {
+        fetch(SHEETS_WEBAPP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+        return true;
+      } catch (_) { return false; }
+    }
+
+    function saveToOutbox(payload){
+      try{
+        const box = JSON.parse(localStorage.getItem(OUTBOX_KEY) || '[]');
+        box.push(payload);
+        while (box.length > 50) box.shift();
+        localStorage.setItem(OUTBOX_KEY, JSON.stringify(box));
+      }catch(_){}
+    }
+
+    function flushOutbox(){
+      try{
+        const box = JSON.parse(localStorage.getItem(OUTBOX_KEY) || '[]');
+        if (!box.length) return;
+        const remaining = [];
+        for (const item of box){
+          const accepted = sendToSheets(item);
+          if (!accepted) remaining.push(item);
+        }
+        localStorage.setItem(OUTBOX_KEY, JSON.stringify(remaining));
+      }catch(_){}
+    }
+    window.addEventListener('online', flushOutbox);
+
+    async function submitPrayer(e){
+      e.preventDefault();
+      if (isSubmitting) return;
+      isSubmitting = true;
+
+      const name = document.getElementById('name').value || 'Anônimo';
+      const prayer = document.getElementById('prayer').value;
+
+      const id = 'pr-' + Date.now() + '-' + Math.random().toString(36).slice(2,8);
+      const payload = {
+        id,
+        timestamp: new Date().toISOString(),
+        name,
+        prayer,
+        verse: currentVerse?.text || '',
+        reference: (currentVerse?.reference || '').trim()
+      };
+
+      const successEl = document.getElementById('success-message');
+      successEl.style.display = 'block';
+      document.getElementById('prayer-form').classList.remove('active');
+
+      const accepted = sendToSheets(payload);
+      if (!accepted) saveToOutbox(payload);
+
+      document.getElementById('name').value='';
+      document.getElementById('prayer').value='';
+      setTimeout(()=> { successEl.style.display='none'; }, 2500);
+
+      recordMetric('prayers');
+      isSubmitting = false;
+    }
+
+    // ====== métricas simples ======
+    let metrics = {pageViews:0, versesGenerated:0, downloads:0, shares:0, prayers:0};
+    function recordMetric(type){
+      metrics[type]++;
+      try{
+        const s = JSON.parse(localStorage.getItem('cpd_metrics')||'{}');
+        s[type]=(s[type]||0)+1; s.lastAccess=new Date().toISOString();
+        localStorage.setItem('cpd_metrics', JSON.stringify(s));
+      }catch(e){}
+      console.log('metric', type, metrics[type]);
+    }
+
+    function debounce(fn, wait){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), wait); }; }
+  </script>
+</body>
+</html>

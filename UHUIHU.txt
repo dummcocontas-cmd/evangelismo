@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Caixinha de Promessas - Comunidade Baptista da Paz</title>
+
+  <meta property="og:title" content="Caixinha de Promessas - Palavra de Deus para Você">
+  <meta property="og:description" content="Receba uma mensagem especial de Deus para o seu dia">
+  <meta property="og:type" content="website">
+
+  <!-- Fontes -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    :root{
+      --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      --shadow-lg: 0 24px 60px rgba(25,33,61,.18);
+      --shadow-md: 0 12px 30px rgba(25,33,61,.12);
+      --radius-xl: 20px;
+    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{
+      font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial,sans-serif;
+      background:var(--primary-gradient);
+      min-height:100vh; display:flex; justify-content:center; align-items:center; padding:20px;
+    }
+    .container{
+      width:100%; max-width:560px; overflow:hidden;
+      border-radius:var(--radius-xl);
+      background:rgba(255,255,255,.94);
+      backdrop-filter: blur(12px);
+      border:1px solid rgba(255,255,255,.5);
+      box-shadow:var(--shadow-lg);
+    }
+    .header{
+      background:var(--primary-gradient); color:#fff; text-align:center;
+      padding:16px 14px 6px;
+    }
+    /* Aplica o mesmo estilo ao SVG logo */
+    .church-logo{
+      width:64px; height:64px; margin:0 auto 8px; display:block;
+      border-radius:50%; background:#fff; padding:10px; 
+      box-shadow:0 6px 18px rgba(0,0,0,.15);
+    }
+    .header h1{ font-family:'Playfair Display',serif; font-size:22px; margin-bottom:6px; text-shadow:0 2px 10px rgba(0,0,0,.25);}
+    .header p{opacity:.95; font-size:13px; margin-bottom:10px}
+
+    /* Redes sociais */
+    .social-links {
+      display:flex;
+      gap:18px;
+      justify-content:center;
+      margin:10px 0 6px;
+      font-size:24px;
+    }
+    .social-links a { text-decoration:none; transition:transform .2s ease; }
+    .social-links a:hover { transform:scale(1.2); }
+    .social-links .instagram { color:#E1306C; }
+    .social-links .facebook  { color:#1877F2; }
+    .social-links .youtube   { color:#FF0000; }
+
+    .content{ padding:14px; }
+
+    #canvas-container{
+      position:relative; margin-bottom:14px; border-radius:18px; overflow:hidden;
+      background:linear-gradient(135deg, rgba(255,255,255,.5), rgba(255,255,255,.3));
+      border:1px solid rgba(255,255,255,.7);
+      box-shadow:var(--shadow-md);
+      width:calc(100% + 28px);
+      margin-left:-14px; margin-right:-14px;
+    }
+    #verse-canvas{display:block; width:100%; height:auto}
+
+    .loading{text-align:center;padding:34px;color:#fff}
+    .loading-spinner{
+      width:40px;height:40px;border-radius:50%;
+      border:3px solid rgba(255,255,255,.35); border-top-color:#fff;
+      animation:spin 1s linear infinite; margin:0 auto 12px;
+    }
+    @keyframes spin{to{rotate:360deg}}
+
+    .action-buttons{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:10px 0 18px;}
+    .btn{
+      border:none; border-radius:12px; padding:13px 16px; font-weight:700; font-size:14px;
+      display:inline-flex; align-items:center; justify-content:center; gap:8px; cursor:pointer;
+      color:#fff; box-shadow:0 6px 18px rgba(25,33,61,.12);
+    }
+    .btn-download{background:linear-gradient(135deg,#16a34a,#22c55e)}
+    .btn-whatsapp{background:linear-gradient(135deg,#25D366,#128C7E)}
+    .btn-primary{background:linear-gradient(135deg,#667eea,#764ba2)}
+    .btn-full{grid-column:1/-1}
+
+    .prayer-section{margin-top:14px; padding-top:16px; border-top:1px dashed #e2e8f0}
+    .prayer-section h3{font-size:16px; color:#111827; text-align:center; margin-bottom:10px}
+    .prayer-form{display:none}
+    .prayer-form.active{display:block}
+    .form-group{margin-bottom:12px}
+    .form-group label{display:block; margin-bottom:6px; color:#6b7280; font-size:13px}
+    .form-group input,.form-group textarea{
+      width:100%; border:1px solid #e5e7eb; border-radius:10px; padding:12px; font-size:14px;
+      background:#fff;
+    }
+    .form-group textarea{min-height:110px; resize:vertical}
+    .btn-ask{ display:block; width:fit-content; margin:0 auto 12px; }
+
+    .church-info{
+      background:#f8fafc; border:1px solid #eef2f7; border-radius:14px; padding:16px; text-align:center;
+    }
+    .church-info h4{font-weight:800; margin-bottom:6px}
+    .church-info p{font-size:13px; color:#475569}
+
+    .refresh-btn{
+      position:fixed; bottom:18px; right:18px; width:56px; height:56px; border:none; border-radius:16px;
+      background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; font-size:24px; cursor:pointer;
+      box-shadow:var(--shadow-lg);
+      display:none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+
+      <!-- ===== Logo embutido como SVG (conteúdo exato do seu arquivo) ===== -->
+      <svg class="church-logo" xmlns="http://www.w3.org/2000/svg"
+           viewBox="0 0 627 627" preserveAspectRatio="xMidYMid meet">
+        <g transform="translate(0,627) scale(0.1,-0.1)" fill="#000000" stroke="none">
+          <!-- Seu SVG veio sem paths. Quando reexportar com paths, eles vão aqui dentro. -->
+        </g>
+      </svg>
+      <!-- ================================================================ -->
+
+      <h1>Caixinha de Promessas</h1>
+      <p>Uma palavra especial de Deus para você</p>
+
+      <!-- Redes sociais com ícones oficiais -->
+      <div class="social-links">
+        <a href="https://www.instagram.com/comunidadebaptista/" target="_blank" class="instagram" title="Instagram">
+          <i class="fab fa-instagram"></i>
+        </a>
+        <a href="https://www.facebook.com/comunidade.baptistadapaz" target="_blank" class="facebook" title="Facebook">
+          <i class="fab fa-facebook"></i>
+        </a>
+        <a href="https://youtube.com/comunidadebaptistadapaz" target="_blank" class="youtube" title="YouTube">
+          <i class="fab fa-youtube"></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="content">
+      <div id="loading-container" class="loading">
+        <div class="loading-spinner"></div>
+        <p>Preparando sua mensagem...</p>
+      </div>
+
+      <div id="canvas-container" style="display:none;">
+        <canvas id="verse-canvas"></canvas>
+      </div>
+
+      <div id="action-container" style="display:none;">
+        <div class="action-buttons">
+          <button class="btn btn-download" onclick="downloadImage()">📥 Baixar</button>
+          <button class="btn btn-whatsapp" onclick="shareWhatsApp()">💬 Compartilhar</button>
+          <button class="btn btn-primary btn-full" onclick="generateNewVerse()">✨ Nova Promessa</button>
+        </div>
+
+        <div class="prayer-section">
+          <h3>💜 Precisa de Oração?</h3>
+          <button class="btn btn-primary btn-ask" style="background:linear-gradient(135deg,#4facfe,#00f2fe)" onclick="togglePrayerForm()">🙏 Enviar Pedido de Oração</button>
+
+          <div id="prayer-form" class="prayer-form">
+            <form onsubmit="submitPrayer(event)">
+              <div class="form-group">
+                <label for="name">Seu Nome (opcional)</label>
+                <input type="text" id="name" name="name" placeholder="Como podemos chamar você?">
+              </div>
+              <div class="form-group">
+                <label for="prayer">Seu Pedido de Oração *</label>
+                <textarea id="prayer" name="prayer" required placeholder="Compartilhe seu pedido conosco. Vamos orar por você!"></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary btn-ask">Enviar Pedido 🙏</button>
+            </form>
+          </div>
+
+          <div id="success-message" class="success-message" style="display:none; background:linear-gradient(135deg,#10b981,#34d399); color:#fff; padding:12px; border-radius:12px; text-align:center; margin-top:10px;">
+            ✅ Pedido enviado! Estamos orando por você!
+          </div>
+        </div>
+
+        <div class="church-info">
+          <h4>COMUNIDADE BAPTISTA DA PAZ</h4>
+          <p>📍 Av. Castelo Branco 18-43 - Jardim Terra Branca, Bauru</p>
+          <p>⏰ Cultos: Dom 19h | Sex 20h</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="refresh-btn" onclick="generateNewVerse()">🔄</button>
+
+  <script>
+    // ====== CONFIG ======
+    const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxVJfhU9Q-UQOYbrY6haa-ZXd6eA-VgvIUiZ-OQYCXHW71PvV4toPSdzv52ES4aed_W/exec";
+
+    // Versículos
+    const verses = [
+      { text:"O Senhor é meu pastor, nada me faltará.", reference:"Salmos 23:1" },
+      { text:"Bem-aventurados os que têm fome e sede de justiça, porque serão fartos.", reference:"Mateus 5:6" }
+    ];
+
+    // Backgrounds
+    const backgrounds = [
+      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=900&fit=crop",
+      "https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=1200&h=900&fit=crop",
+      "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1200&h=900&fit=crop"
+    ];
+
+    let currentVerse, currentBackground, generatedImageData;
+
+    // --- controle de layout e travas ---
+    let lastBucket = null;         // 'mobile' | 'desktop'
+    let isRendering = false;       // evita chamadas concorrentes
+    function widthBucket(){ return window.innerWidth <= 768 ? 'mobile' : 'desktop'; }
+
+    // load único
+    window.addEventListener('load', () => {
+      recordMetric('pageViews');
+      lastBucket = widthBucket();
+      flushOutbox();      // tenta reenviar o que ficou pendente de sessões anteriores
+      generateNewVerse();
+    });
+
+    // redesenha só quando mudar o bucket (mobile/desktop)
+    window.addEventListener('resize', debounce(() => {
+      const b = widthBucket();
+      if (b !== lastBucket) {
+        lastBucket = b;
+        generateNewVerse();
+      }
+    }, 400));
+
+    // orientação (girar celular)
+    window.addEventListener('orientationchange', () => {
+      setTimeout(() => {
+        const b = widthBucket();
+        if (b !== lastBucket) {
+          lastBucket = b;
+          generateNewVerse();
+        }
+      }, 250);
+    });
+
+    function generateNewVerse(){
+      if (isRendering) return; // já desenhando? ignora
+      isRendering = true;
+
+      document.getElementById('loading-container').style.display='block';
+      document.getElementById('canvas-container').style.display='none';
+      document.getElementById('action-container').style.display='none';
+      document.querySelector('.refresh-btn').style.display='none';
+
+      currentVerse = verses[Math.floor(Math.random()*verses.length)];
+      currentBackground = backgrounds[Math.floor(Math.random()*backgrounds.length)];
+      recordMetric('versesGenerated');
+
+      const img = new Image();
+      img.crossOrigin='anonymous';
+      img.onload = ()=> { drawCard(img); isRendering = false; };
+      img.onerror = ()=> { drawCard();    isRendering = false; };
+      img.src = currentBackground + (currentBackground.includes('?')?'&':'?') + 'cb=' + Date.now();
+    }
+
+    function getLayout(){
+      const isMobile = window.innerWidth <= 768;
+      return {
+        W: 800,
+        H: isMobile ? 720 : 600,
+        titleSize: isMobile ? 40 : 36,
+        refSize: isMobile ? 24 : 22,
+        lh: isMobile ? 52 : 46,
+        startY: isMobile ? 260 : 280,
+        maxTextW: isMobile ? 740 : 700
+      };
+    }
+
+    function drawCard(bgImage){
+      const {W,H,titleSize,refSize,lh,startY,maxTextW} = getLayout();
+      const canvas = document.getElementById('verse-canvas');
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = W * dpr; canvas.height = H * dpr; canvas.style.width = '100%';
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+
+      if (bgImage){
+        ctx.drawImage(bgImage, 0, 0, W, H);
+        const overlay = ctx.createLinearGradient(0,0,0,H);
+        overlay.addColorStop(0, 'rgba(0,0,0,0.25)');
+        overlay.addColorStop(1, 'rgba(0,0,0,0.55)');
+        ctx.fillStyle = overlay; ctx.fillRect(0,0,W,H);
+      } else {
+        const g = ctx.createLinearGradient(0,0,W,H);
+        g.addColorStop(0,'#667eea'); g.addColorStop(1,'#764ba2');
+        ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+      }
+
+      ctx.fillStyle='#fff'; ctx.textAlign='center';
+      ctx.shadowColor='rgba(0,0,0,.85)'; ctx.shadowBlur=12;
+
+      ctx.font = `700 ${titleSize}px "Playfair Display", Georgia, serif`;
+      const lastY = wrapText(ctx, currentVerse.text, W/2, startY, maxTextW, lh);
+
+      ctx.font = `italic ${refSize}px Georgia, serif`;
+      ctx.fillText((currentVerse.reference||'').trim(), W/2, Math.min(lastY + 40, H-90));
+
+      ctx.shadowBlur=8; ctx.font='bold 20px Inter, Arial, sans-serif';
+      ctx.fillText('COMUNIDADE BAPTISTA DA PAZ', W/2, H-40);
+      ctx.font='600 15px Inter, Arial, sans-serif';
+      ctx.fillText('Av. Castelo Branco 18-43 - Jardim Terra Branca, Bauru', W/2, H-20);
+
+      generatedImageData = canvas.toDataURL('image/png');
+
+      document.getElementById('loading-container').style.display='none';
+      document.getElementById('canvas-container').style.display='block';
+      document.getElementById('action-container').style.display='block';
+      document.querySelector('.refresh-btn').style.display='block';
+    }
+
+    function wrapText(ctx, text, x, y, maxWidth, lineHeight){
+      const words = (text||'').trim().split(' '); let line=''; let currentY=y;
+      for(let n=0;n<words.length;n++){
+        const test = line + words[n] + ' ';
+        if (ctx.measureText(test).width > maxWidth && n>0){
+          ctx.fillText(line, x, currentY); line = words[n] + ' '; currentY += lineHeight;
+        } else line = test;
+      }
+      ctx.fillText(line, x, currentY);
+      return currentY;
+    }
+
+    function downloadImage(){
+      recordMetric('downloads');
+      const a = document.createElement('a');
+      a.download = `promessa-${Date.now()}.png`;
+      a.href = generatedImageData;
+      a.click();
+    }
+
+    function shareWhatsApp(){
+      recordMetric('shares');
+      const text = `🙏 *Promessa do Dia*\n\n"${currentVerse.text}"\n_${(currentVerse.reference||'').trim()}_\n\n` +
+                   `✨ Receba sua promessa também!\n📱 COMUNIDADE BAPTISTA DA PAZ\nAv. Castelo Branco 18-43 - Jardim Terra Branca, Bauru`;
+      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+    }
+
+    function togglePrayerForm(){
+      document.getElementById('prayer-form').classList.toggle('active');
+    }
+
+    // ====== ENVIO OTIMISTA + OUTBOX ======
+    const OUTBOX_KEY = 'prayer_outbox_v1';
+    let isSubmitting = false;
+
+    function sendToSheets(payload){
+      try {
+        if (navigator.sendBeacon) {
+          const blob = new Blob([JSON.stringify(payload)], { type: 'text/plain;charset=UTF-8' });
+          return navigator.sendBeacon(SHEETS_WEBAPP_URL, blob);
+        }
+      } catch (_) {}
+      try {
+        fetch(SHEETS_WEBAPP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+        return true;
+      } catch (_) { return false; }
+    }
+
+    function saveToOutbox(payload){
+      try{
+        const box = JSON.parse(localStorage.getItem(OUTBOX_KEY) || '[]');
+        box.push(payload);
+        while (box.length > 50) box.shift();
+        localStorage.setItem(OUTBOX_KEY, JSON.stringify(box));
+      }catch(_){}
+    }
+
+    function flushOutbox(){
+      try{
+        const box = JSON.parse(localStorage.getItem(OUTBOX_KEY) || '[]');
+        if (!box.length) return;
+        const remaining = [];
+        for (const item of box){
+          const accepted = sendToSheets(item);
+          if (!accepted) remaining.push(item);
+        }
+        localStorage.setItem(OUTBOX_KEY, JSON.stringify(remaining));
+      }catch(_){}
+    }
+    window.addEventListener('online', flushOutbox);
+
+    async function submitPrayer(e){
+      e.preventDefault();
+      if (isSubmitting) return;
+      isSubmitting = true;
+
+      const name = document.getElementById('name').value || 'Anônimo';
+      const prayer = document.getElementById('prayer').value;
+
+      const id = 'pr-' + Date.now() + '-' + Math.random().toString(36).slice(2,8);
+      const payload = {
+        id,
+        timestamp: new Date().toISOString(),
+        name,
+        prayer,
+        verse: currentVerse?.text || '',
+        reference: (currentVerse?.reference || '').trim()
+      };
+
+      // UI otimista
+      const successEl = document.getElementById('success-message');
+      successEl.style.display = 'block';
+      document.getElementById('prayer-form').classList.remove('active');
+
+      // tenta enviar primeiro; se não aceitar, salva para enviar depois
+      const accepted = sendToSheets(payload);
+      if (!accepted) saveToOutbox(payload);
+
+      // limpa campos e feedback
+      document.getElementById('name').value='';
+      document.getElementById('prayer').value='';
+      setTimeout(()=> { successEl.style.display='none'; }, 2500);
+
+      recordMetric('prayers');
+      isSubmitting = false;
+    }
+
+    // ====== métricas simples ======
+    let metrics = {pageViews:0, versesGenerated:0, downloads:0, shares:0, prayers:0};
+    function recordMetric(type){
+      metrics[type]++;
+      try{
+        const s = JSON.parse(localStorage.getItem('cpd_metrics')||'{}');
+        s[type]=(s[type]||0)+1; s.lastAccess=new Date().toISOString();
+        localStorage.setItem('cpd_metrics', JSON.stringify(s));
+      }catch(e){}
+      console.log('metric', type, metrics[type]);
+    }
+
+    function debounce(fn, wait){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), wait); }; }
+  </script>
+</body>
+</html>
